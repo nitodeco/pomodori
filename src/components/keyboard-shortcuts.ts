@@ -7,10 +7,11 @@ type KeyboardShortcutsConfig = {
   onStop: () => void;
   onReset: () => void;
   getCurrentState: () => TimerState;
+  onOpenSettings?: () => void;
 };
 
 export const createKeyboardShortcuts = (config: KeyboardShortcutsConfig) => {
-  const { onStart, onPause, onResume, onStop, onReset, getCurrentState } =
+  const { onStart, onPause, onResume, onStop, onReset, getCurrentState, onOpenSettings } =
     config;
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -48,6 +49,13 @@ export const createKeyboardShortcuts = (config: KeyboardShortcutsConfig) => {
 
     if (key === "KeyR") {
       onReset();
+
+      return;
+    }
+
+    if (key === "Comma" && event.metaKey && onOpenSettings) {
+      event.preventDefault();
+      onOpenSettings();
 
       return;
     }

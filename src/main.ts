@@ -1,19 +1,17 @@
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { emit, listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/core";
 import {
   createAutoAdvance,
   createCircularProgress,
   createControlButtons,
   createKeyboardShortcuts,
-  createSettingsPanel,
   createSoundManager,
-  createStatsDashboard,
   createTimeDisplay,
 } from "./components";
 import { timerStore } from "./timer";
 import { sessionTracker, statsStore } from "./sessions";
 import { createTrayManager } from "./tray";
 
-const appWindow = getCurrentWindow();
 const autoAdvance = createAutoAdvance();
 const soundManager = createSoundManager();
 const trayManager = createTrayManager({
@@ -24,17 +22,16 @@ const trayManager = createTrayManager({
   getCurrentState: () => timerStore.getStatus().state,
 });
 
-const setupTitlebarControls = () => {
-  document.querySelectorAll(".titlebar-button").forEach((button) => {
-    button.addEventListener("click", async (event) => {
-      const target = event.currentTarget as HTMLElement;
-      const action = target.dataset.action;
+const openSettingsWindow = async () => {
+  await invoke("open_settings_window");
+};
 
-      if (action === "close") {
-        await appWindow.close();
-      } else if (action === "minimize") {
-        await appWindow.minimize();
-      }
+const setupContextMenu = () => {
+  window.addEventListener("contextmenu", (contextMenuEvent) => {
+    contextMenuEvent.preventDefault();
+    invoke("show_main_context_menu", {
+      position_x: contextMenuEvent.clientX,
+      position_y: contextMenuEvent.clientY,
     });
   });
 };
@@ -72,6 +69,7 @@ const setupTimer = async () => {
     onStop: () => timerStore.stop(),
     onReset: () => timerStore.reset(),
     getCurrentState: () => timerStore.getStatus().state,
+    onOpenSettings: () => openSettingsWindow(),
   });
 
   await timerStore.init();
@@ -85,39 +83,6 @@ const setupTimer = async () => {
   });
 };
 
-const setupSettings = () => {
-  const maybeApp = document.querySelector(".app");
-  const maybeSettingsButton = document.getElementById("settings-button");
-
-  if (!maybeApp || !maybeSettingsButton) {
-    return;
-  }
-
-  const settingsPanel = createSettingsPanel({
-    container: maybeApp as HTMLElement,
-    onSettingsChange: () => {
-      soundManager.refreshSettings();
-    },
-  });
-
-  maybeSettingsButton.addEventListener("click", () => settingsPanel.open());
-};
-
-const setupStatsDashboard = () => {
-  const maybeApp = document.querySelector(".app");
-  const maybeStatsButton = document.getElementById("stats-button");
-
-  if (!maybeApp || !maybeStatsButton) {
-    return;
-  }
-
-  const statsDashboard = createStatsDashboard({
-    container: maybeApp as HTMLElement,
-  });
-
-  maybeStatsButton.addEventListener("click", () => statsDashboard.open());
-};
-
 const setupSessionTracking = async () => {
   await sessionTracker.init();
   await statsStore.refresh();
@@ -125,6 +90,7 @@ const setupSessionTracking = async () => {
   sessionTracker.onSessionCompleted(() => {
     statsStore.refreshTodayStats();
     statsStore.refreshAllTimeStats();
+    void emit("stats-refresh", null);
   });
 };
 
@@ -140,11 +106,16 @@ const setupAutoAdvance = async () => {
   await autoAdvance.init();
 };
 
+const setupSettingsSync = async () => {
+  await listen("settings-updated", () => {
+    soundManager.refreshSettings();
+  });
+};
+
 window.addEventListener("DOMContentLoaded", () => {
-  setupTitlebarControls();
   setupTimer();
-  setupSettings();
-  setupStatsDashboard();
+  setupContextMenu();
+  setupSettingsSync();
   setupSessionTracking();
   setupSounds();
   setupTray();

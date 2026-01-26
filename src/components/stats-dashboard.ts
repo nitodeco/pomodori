@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { SessionStats } from "../database";
 import { statsStore } from "../sessions";
 
@@ -57,10 +58,7 @@ const createStatsGroup = (title: string): HTMLDivElement => {
 
 export const createStatsDashboard = (config: StatsDashboardConfig) => {
   const { container } = config;
-
-  const overlay = document.createElement("div");
-  overlay.className = "stats-overlay";
-  overlay.style.display = "none";
+  const appWindow = getCurrentWindow();
 
   const panel = document.createElement("div");
   panel.className = "stats-panel";
@@ -84,12 +82,18 @@ export const createStatsDashboard = (config: StatsDashboardConfig) => {
   content.className = "stats-content";
 
   const todayGroup = createStatsGroup("Today");
-  const todayItems = todayGroup.querySelector(".stats-group__items")!;
+  const todayItems = todayGroup.querySelector(".stats-group__items");
+  if (!todayItems) {
+    throw new Error("Stats dashboard items container missing.");
+  }
   todayItems.appendChild(createStatItem("Sessions", "stats-today-sessions"));
   todayItems.appendChild(createStatItem("Focus Time", "stats-today-time"));
 
   const allTimeGroup = createStatsGroup("All Time");
-  const allTimeItems = allTimeGroup.querySelector(".stats-group__items")!;
+  const allTimeItems = allTimeGroup.querySelector(".stats-group__items");
+  if (!allTimeItems) {
+    throw new Error("Stats dashboard items container missing.");
+  }
   allTimeItems.appendChild(createStatItem("Sessions", "stats-alltime-sessions"));
   allTimeItems.appendChild(createStatItem("Focus Time", "stats-alltime-time"));
 
@@ -98,8 +102,7 @@ export const createStatsDashboard = (config: StatsDashboardConfig) => {
 
   panel.appendChild(header);
   panel.appendChild(content);
-  overlay.appendChild(panel);
-  container.appendChild(overlay);
+  container.appendChild(panel);
 
   const updateTodayStats = (stats: SessionStats): void => {
     const sessionsEl = document.getElementById("stats-today-sessions");
@@ -130,32 +133,34 @@ export const createStatsDashboard = (config: StatsDashboardConfig) => {
   const unsubscribeToday = statsStore.subscribeToday(updateTodayStats);
   const unsubscribeAllTime = statsStore.subscribeAllTime(updateAllTimeStats);
 
-  const open = async (): Promise<void> => {
+  const refresh = async (): Promise<void> => {
     await statsStore.refresh();
-    overlay.style.display = "flex";
   };
 
-  const close = (): void => {
-    overlay.style.display = "none";
-  };
-
-  closeButton.addEventListener("click", close);
-  overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) {
-      close();
-    }
+  closeButton.addEventListener("click", () => {
+    appWindow.close();
   });
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.code === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      appWindow.close();
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+
   const destroy = (): void => {
+    window.removeEventListener("keydown", handleKeyDown);
     unsubscribeToday();
     unsubscribeAllTime();
-    overlay.remove();
+    panel.remove();
   };
 
   return {
-    element: overlay,
-    open,
-    close,
+    element: panel,
+    refresh,
     destroy,
   };
 };

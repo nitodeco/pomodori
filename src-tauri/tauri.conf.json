@@ -21,11 +21,37 @@
         "title": "Pomodori",
         "width": 320,
         "height": 400,
-        "resizable": false,
-        "decorations": false,
-        "transparent": true,
+        "resizable": true,
+        "decorations": true,
+        "transparent": false,
         "center": true,
         "shadow": true
+      },
+      {
+        "label": "settings",
+        "title": "Settings",
+        "width": 360,
+        "height": 520,
+        "resizable": false,
+        "decorations": true,
+        "transparent": false,
+        "center": true,
+        "shadow": true,
+        "visible": false,
+        "url": "settings-window.html"
+      },
+      {
+        "label": "stats",
+        "title": "Statistics",
+        "width": 320,
+        "height": 280,
+        "resizable": false,
+        "decorations": true,
+        "transparent": false,
+        "center": true,
+        "shadow": true,
+        "visible": false,
+        "url": "stats-window.html"
       }
     ],
     "security": {

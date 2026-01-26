@@ -6,17 +6,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:app": "tauri build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "CI=false TAURI_CI=false tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2",
+    "@tauri-apps/api": "2.9.1",
     "@tauri-apps/plugin-notification": "2.3.3",
-    "@tauri-apps/plugin-opener": "^2"
+    "@tauri-apps/plugin-opener": "2.5.3"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2",
-    "typescript": "~5.6.2",
-    "vite": "^6.0.3"
+    "@tauri-apps/cli": "2.9.6",
+    "typescript": "5.9.3",
+    "vite": "7.3.1"
   }
 }

@@ -1,45 +1,106 @@
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { createTickSound, type TickSound } from "../audio";
 import { getSettings } from "../settings";
-import type { TimerStatus } from "../timer/types";
+import type { TimerStatus, TimerState, SessionType } from "../timer/types";
 
 type SoundManagerConfig = {
   onlyDuringWork?: boolean;
 };
 
+const getNextSessionType = (currentSessionType: SessionType): SessionType => {
+  if (currentSessionType === "work") {
+    return "shortBreak";
+  }
+  return "work";
+};
+
+const isAutoStartEnabled = async (
+  nextSessionType: SessionType
+): Promise<boolean> => {
+  const settings = await getSettings();
+
+  if (nextSessionType === "work") {
+    return settings.autoStartWork;
+  }
+
+  return settings.autoStartBreaks;
+};
+
 export const createSoundManager = (config: SoundManagerConfig = {}) => {
   const { onlyDuringWork = false } = config;
 
-  const tickSound: TickSound = createTickSound();
+  const alertSound: TickSound = createTickSound();
   let unlistenTick: UnlistenFn | null = null;
+  let unlistenFinished: UnlistenFn | null = null;
   let isEnabled = true;
+  let previousState: TimerState | null = null;
 
   const refreshSettings = async () => {
     const settings = await getSettings();
     isEnabled = settings.soundEnabled;
   };
 
-  const handleTick = (status: TimerStatus) => {
+  const shouldPlaySound = (sessionType: SessionType): boolean => {
     if (!isEnabled) {
+      return false;
+    }
+
+    if (onlyDuringWork && sessionType !== "work") {
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleStateTransition = (status: TimerStatus) => {
+    const currentState = status.state;
+
+    if (previousState === null) {
+      previousState = currentState;
       return;
     }
 
-    if (status.state !== "running") {
+    if (previousState === currentState) {
       return;
     }
 
-    if (onlyDuringWork && status.sessionType !== "work") {
+    const hasStateChanged = previousState !== currentState;
+    const isTransition =
+      (previousState === "idle" && currentState === "running") ||
+      (previousState === "running" && currentState === "paused") ||
+      (previousState === "paused" && currentState === "running") ||
+      (previousState === "running" && currentState === "idle") ||
+      (previousState === "paused" && currentState === "idle");
+
+    if (hasStateChanged && isTransition && shouldPlaySound(status.sessionType)) {
+      alertSound.play();
+    }
+
+    previousState = currentState;
+  };
+
+  const handleTimerFinished = async (status: TimerStatus) => {
+    if (!shouldPlaySound(status.sessionType)) {
       return;
     }
 
-    tickSound.play();
+    const nextSessionType = getNextSessionType(status.sessionType);
+    const autoStartEnabled = await isAutoStartEnabled(nextSessionType);
+
+    if (!autoStartEnabled) {
+      alertSound.play();
+    }
   };
 
   const init = async () => {
     await refreshSettings();
 
     unlistenTick = await listen<TimerStatus>("timer-tick", (event) => {
-      handleTick(event.payload);
+      handleStateTransition(event.payload);
+    });
+
+    unlistenFinished = await listen<TimerStatus>("timer-finished", (event) => {
+      handleTimerFinished(event.payload);
     });
   };
 
@@ -53,7 +114,12 @@ export const createSoundManager = (config: SoundManagerConfig = {}) => {
       unlistenTick = null;
     }
 
-    tickSound.destroy();
+    if (unlistenFinished) {
+      unlistenFinished();
+      unlistenFinished = null;
+    }
+
+    alertSound.destroy();
   };
 
   return {

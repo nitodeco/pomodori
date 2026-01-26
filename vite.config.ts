@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import { defineConfig } from "vite";
 
 // @ts-expect-error process is a nodejs global
@@ -25,6 +26,11 @@ export default defineConfig(async () => ({
     minify: "esbuild",
     cssMinify: true,
     rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        settings: resolve(__dirname, "settings-window.html"),
+        stats: resolve(__dirname, "stats-window.html"),
+      },
       output: {
         manualChunks: undefined,
       },

@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { Settings } from "../settings";
 import { getSettings, updateSettings } from "../settings";
 
@@ -78,14 +79,7 @@ const createSection = (title: string): HTMLDivElement => {
 
 export const createSettingsPanel = (config: SettingsPanelConfig) => {
   const { container, onSettingsChange } = config;
-  let currentSettings: Settings | null = null;
-
-  const overlay = document.createElement("div");
-  overlay.className = "settings-overlay";
-  overlay.style.display = "none";
-
-  const panel = document.createElement("div");
-  panel.className = "settings-panel";
+  const appWindow = getCurrentWindow();
 
   const header = document.createElement("div");
   header.className = "settings-header";
@@ -179,11 +173,9 @@ export const createSettingsPanel = (config: SettingsPanelConfig) => {
 
   footer.appendChild(saveButton);
 
-  panel.appendChild(header);
-  panel.appendChild(content);
-  panel.appendChild(footer);
-  overlay.appendChild(panel);
-  container.appendChild(overlay);
+  container.appendChild(header);
+  container.appendChild(content);
+  container.appendChild(footer);
 
   const getFormValues = (): Settings => {
     const workDurationInput = document.getElementById(
@@ -261,40 +253,48 @@ export const createSettingsPanel = (config: SettingsPanelConfig) => {
     notifInput.checked = settings.notificationsEnabled;
   };
 
-  const open = async () => {
-    currentSettings = await getSettings();
-    setFormValues(currentSettings);
-    overlay.style.display = "flex";
-  };
-
-  const close = () => {
-    overlay.style.display = "none";
+  const load = async () => {
+    const settings = await getSettings();
+    setFormValues(settings);
   };
 
   const save = async () => {
-    const newSettings = getFormValues();
-    const savedSettings = await updateSettings(newSettings);
-    currentSettings = savedSettings;
-    onSettingsChange(savedSettings);
-    close();
+    try {
+      const newSettings = getFormValues();
+      const savedSettings = await updateSettings(newSettings);
+      await onSettingsChange(savedSettings);
+    } catch (error) {
+      console.error("Failed to save settings:", error);
+    } finally {
+      await appWindow.close();
+    }
   };
 
-  closeButton.addEventListener("click", close);
-  overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) {
-      close();
-    }
+  closeButton.addEventListener("click", () => {
+    appWindow.close();
   });
   saveButton.addEventListener("click", save);
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.code === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      appWindow.close();
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+
   const destroy = () => {
-    overlay.remove();
+    window.removeEventListener("keydown", handleKeyDown);
+    header.remove();
+    content.remove();
+    footer.remove();
   };
 
   return {
-    element: overlay,
-    open,
-    close,
+    element: container,
+    load,
     destroy,
   };
 };
