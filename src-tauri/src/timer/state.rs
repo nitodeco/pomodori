@@ -31,3 +31,36 @@ impl SessionType {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn timer_state_default_is_idle() {
+        assert_eq!(TimerState::default(), TimerState::Idle);
+    }
+
+    #[test]
+    fn session_type_default_is_work() {
+        assert_eq!(SessionType::default(), SessionType::Work);
+    }
+
+    #[test]
+    fn work_duration_is_25_minutes() {
+        assert_eq!(SessionType::WORK_DURATION_IN_SECS, 25 * 60);
+        assert_eq!(SessionType::Work.default_duration_in_secs(), 25 * 60);
+    }
+
+    #[test]
+    fn short_break_duration_is_5_minutes() {
+        assert_eq!(SessionType::SHORT_BREAK_DURATION_IN_SECS, 5 * 60);
+        assert_eq!(SessionType::ShortBreak.default_duration_in_secs(), 5 * 60);
+    }
+
+    #[test]
+    fn long_break_duration_is_15_minutes() {
+        assert_eq!(SessionType::LONG_BREAK_DURATION_IN_SECS, 15 * 60);
+        assert_eq!(SessionType::LongBreak.default_duration_in_secs(), 15 * 60);
+    }
+}

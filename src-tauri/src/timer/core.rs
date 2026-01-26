@@ -146,3 +146,307 @@ impl Default for Timer {
         Self::new(SessionType::default())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_timer_starts_idle_with_default_duration() {
+        let timer = Timer::new(SessionType::Work);
+
+        assert_eq!(timer.state(), TimerState::Idle);
+        assert_eq!(timer.session_type(), SessionType::Work);
+        assert_eq!(timer.remaining_secs(), 25 * 60);
+        assert_eq!(timer.total_secs(), 25 * 60);
+    }
+
+    #[test]
+    fn with_duration_sets_custom_duration() {
+        let timer = Timer::with_duration(SessionType::Work, 600);
+
+        assert_eq!(timer.remaining_secs(), 600);
+        assert_eq!(timer.total_secs(), 600);
+    }
+
+    #[test]
+    fn default_timer_is_work_session() {
+        let timer = Timer::default();
+
+        assert_eq!(timer.session_type(), SessionType::Work);
+        assert_eq!(timer.state(), TimerState::Idle);
+    }
+
+    #[test]
+    fn elapsed_secs_calculates_correctly() {
+        let mut timer = Timer::with_duration(SessionType::Work, 100);
+        timer.start();
+
+        for _ in 0..30 {
+            timer.tick();
+        }
+
+        assert_eq!(timer.elapsed_secs(), 30);
+        assert_eq!(timer.remaining_secs(), 70);
+    }
+
+    #[test]
+    fn progress_returns_zero_at_start() {
+        let timer = Timer::new(SessionType::Work);
+
+        assert!((timer.progress() - 0.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn progress_returns_half_at_midpoint() {
+        let mut timer = Timer::with_duration(SessionType::Work, 100);
+        timer.start();
+
+        for _ in 0..50 {
+            timer.tick();
+        }
+
+        assert!((timer.progress() - 0.5).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn progress_returns_one_when_total_is_zero() {
+        let timer = Timer::with_duration(SessionType::Work, 0);
+
+        assert!((timer.progress() - 1.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn is_finished_when_remaining_is_zero() {
+        let mut timer = Timer::with_duration(SessionType::Work, 2);
+        timer.start();
+        timer.tick();
+        timer.tick();
+
+        assert!(timer.is_finished());
+    }
+
+    #[test]
+    fn start_from_idle_transitions_to_running() {
+        let mut timer = Timer::new(SessionType::Work);
+
+        assert!(timer.start());
+        assert_eq!(timer.state(), TimerState::Running);
+    }
+
+    #[test]
+    fn start_from_running_returns_false() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+
+        assert!(!timer.start());
+    }
+
+    #[test]
+    fn start_from_paused_returns_false() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+        timer.pause();
+
+        assert!(!timer.start());
+    }
+
+    #[test]
+    fn pause_from_running_transitions_to_paused() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+
+        assert!(timer.pause());
+        assert_eq!(timer.state(), TimerState::Paused);
+    }
+
+    #[test]
+    fn pause_from_idle_returns_false() {
+        let mut timer = Timer::new(SessionType::Work);
+
+        assert!(!timer.pause());
+    }
+
+    #[test]
+    fn pause_from_paused_returns_false() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+        timer.pause();
+
+        assert!(!timer.pause());
+    }
+
+    #[test]
+    fn resume_from_paused_transitions_to_running() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+        timer.pause();
+
+        assert!(timer.resume());
+        assert_eq!(timer.state(), TimerState::Running);
+    }
+
+    #[test]
+    fn resume_from_idle_returns_false() {
+        let mut timer = Timer::new(SessionType::Work);
+
+        assert!(!timer.resume());
+    }
+
+    #[test]
+    fn resume_from_running_returns_false() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+
+        assert!(!timer.resume());
+    }
+
+    #[test]
+    fn stop_from_running_resets_to_idle() {
+        let mut timer = Timer::with_duration(SessionType::Work, 100);
+        timer.start();
+        timer.tick();
+        timer.tick();
+
+        assert!(timer.stop());
+        assert_eq!(timer.state(), TimerState::Idle);
+        assert_eq!(timer.remaining_secs(), 100);
+    }
+
+    #[test]
+    fn stop_from_paused_resets_to_idle() {
+        let mut timer = Timer::with_duration(SessionType::Work, 100);
+        timer.start();
+        timer.tick();
+        timer.pause();
+
+        assert!(timer.stop());
+        assert_eq!(timer.state(), TimerState::Idle);
+        assert_eq!(timer.remaining_secs(), 100);
+    }
+
+    #[test]
+    fn stop_from_idle_returns_false() {
+        let mut timer = Timer::new(SessionType::Work);
+
+        assert!(!timer.stop());
+    }
+
+    #[test]
+    fn reset_restores_full_duration() {
+        let mut timer = Timer::with_duration(SessionType::Work, 100);
+        timer.start();
+
+        for _ in 0..50 {
+            timer.tick();
+        }
+
+        timer.reset();
+
+        assert_eq!(timer.state(), TimerState::Idle);
+        assert_eq!(timer.remaining_secs(), 100);
+    }
+
+    #[test]
+    fn tick_decrements_remaining_when_running() {
+        let mut timer = Timer::with_duration(SessionType::Work, 100);
+        timer.start();
+
+        assert!(timer.tick());
+        assert_eq!(timer.remaining_secs(), 99);
+    }
+
+    #[test]
+    fn tick_returns_false_when_idle() {
+        let mut timer = Timer::new(SessionType::Work);
+
+        assert!(!timer.tick());
+    }
+
+    #[test]
+    fn tick_returns_false_when_paused() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+        timer.pause();
+
+        assert!(!timer.tick());
+    }
+
+    #[test]
+    fn tick_transitions_to_idle_when_finished() {
+        let mut timer = Timer::with_duration(SessionType::Work, 1);
+        timer.start();
+        timer.tick();
+
+        assert_eq!(timer.state(), TimerState::Idle);
+        assert_eq!(timer.remaining_secs(), 0);
+    }
+
+    #[test]
+    fn tick_does_not_go_negative() {
+        let mut timer = Timer::with_duration(SessionType::Work, 1);
+        timer.start();
+        timer.tick();
+
+        let remaining_after_finish = timer.remaining_secs();
+        timer.start();
+        timer.tick();
+
+        assert_eq!(timer.remaining_secs(), remaining_after_finish);
+    }
+
+    #[test]
+    fn set_session_type_updates_duration_and_resets() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+        timer.tick();
+
+        timer.set_session_type(SessionType::ShortBreak);
+
+        assert_eq!(timer.session_type(), SessionType::ShortBreak);
+        assert_eq!(timer.state(), TimerState::Idle);
+        assert_eq!(timer.remaining_secs(), 5 * 60);
+        assert_eq!(timer.total_secs(), 5 * 60);
+    }
+
+    #[test]
+    fn set_duration_updates_and_resets() {
+        let mut timer = Timer::new(SessionType::Work);
+        timer.start();
+        timer.tick();
+
+        timer.set_duration(1800);
+
+        assert_eq!(timer.state(), TimerState::Idle);
+        assert_eq!(timer.remaining_secs(), 1800);
+        assert_eq!(timer.total_secs(), 1800);
+    }
+
+    #[test]
+    fn full_session_lifecycle() {
+        let mut timer = Timer::with_duration(SessionType::Work, 3);
+
+        assert_eq!(timer.state(), TimerState::Idle);
+
+        timer.start();
+        assert_eq!(timer.state(), TimerState::Running);
+
+        timer.tick();
+        assert_eq!(timer.remaining_secs(), 2);
+
+        timer.pause();
+        assert_eq!(timer.state(), TimerState::Paused);
+
+        timer.tick();
+        assert_eq!(timer.remaining_secs(), 2);
+
+        timer.resume();
+        assert_eq!(timer.state(), TimerState::Running);
+
+        timer.tick();
+        timer.tick();
+        assert_eq!(timer.remaining_secs(), 0);
+        assert_eq!(timer.state(), TimerState::Idle);
+        assert!(timer.is_finished());
+    }
+}
