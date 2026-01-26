@@ -1,5 +1,5 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { createCircularProgress } from "./components";
+import { createCircularProgress, createTimeDisplay } from "./components";
 import { timerStore } from "./timer";
 
 const appWindow = getCurrentWindow();
@@ -32,10 +32,16 @@ const setupTimer = async () => {
     strokeWidthInPx: 8,
   });
 
+  const timeDisplay = createTimeDisplay({
+    container: maybeContainer,
+  });
+
   await timerStore.init();
 
   timerStore.subscribe((status) => {
     circularProgress.setProgress(status.progress);
+    timeDisplay.setTime(status.remainingSecs);
+    timeDisplay.setMode(status.sessionType);
   });
 };
 
