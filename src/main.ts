@@ -10,9 +10,17 @@ import {
 } from "./components";
 import { timerStore } from "./timer";
 import { sessionTracker, statsStore } from "./sessions";
+import { createTrayManager } from "./tray";
 
 const appWindow = getCurrentWindow();
 const soundManager = createSoundManager();
+const trayManager = createTrayManager({
+  onStart: () => timerStore.start(),
+  onPause: () => timerStore.pause(),
+  onResume: () => timerStore.resume(),
+  onStop: () => timerStore.stop(),
+  getCurrentState: () => timerStore.getStatus().state,
+});
 
 const setupTitlebarControls = () => {
   document.querySelectorAll(".titlebar-button").forEach((button) => {
@@ -71,6 +79,7 @@ const setupTimer = async () => {
     timeDisplay.setTime(status.remainingSecs);
     timeDisplay.setMode(status.sessionType);
     controlButtons.setState(status.state);
+    trayManager.updateTooltip(status);
   });
 };
 
@@ -121,6 +130,10 @@ const setupSounds = async () => {
   await soundManager.init();
 };
 
+const setupTray = async () => {
+  await trayManager.init();
+};
+
 window.addEventListener("DOMContentLoaded", () => {
   setupTitlebarControls();
   setupTimer();
@@ -128,4 +141,5 @@ window.addEventListener("DOMContentLoaded", () => {
   setupStatsDashboard();
   setupSessionTracking();
   setupSounds();
+  setupTray();
 });

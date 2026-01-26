@@ -11,6 +11,10 @@
   },
   "app": {
     "withGlobalTauri": true,
+    "trayIcon": {
+      "iconPath": "icons/32x32.png",
+      "iconAsTemplate": true
+    },
     "windows": [
       {
         "label": "main",

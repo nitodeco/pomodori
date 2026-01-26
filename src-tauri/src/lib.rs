@@ -2,6 +2,7 @@ mod commands;
 pub mod database;
 pub mod settings;
 pub mod timer;
+pub mod tray;
 
 use std::sync::Mutex;
 
@@ -14,6 +15,7 @@ use database::{
 };
 use settings::{settings_get, settings_update};
 use timer::Timer;
+use tray::{commands::tray_update_tooltip, setup_tray};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -28,6 +30,7 @@ pub fn run() {
                     .await
                     .expect("Failed to initialize database");
             });
+            setup_tray(&handle).expect("Failed to setup system tray");
             Ok(())
         })
         .manage(TimerManager(Mutex::new(Timer::default())))
@@ -46,6 +49,7 @@ pub fn run() {
             db_complete_session,
             db_get_sessions,
             db_get_stats,
+            tray_update_tooltip,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

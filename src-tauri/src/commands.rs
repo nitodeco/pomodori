@@ -147,7 +147,10 @@ fn send_timer_notification(app: &AppHandle, session_type: SessionType) {
     let (title, body) = match session_type {
         SessionType::Work => ("Work Session Complete", "Great job! Time to take a break."),
         SessionType::ShortBreak => ("Break Over", "Ready to focus? Start your next session."),
-        SessionType::LongBreak => ("Long Break Over", "Feeling refreshed? Let's get back to work."),
+        SessionType::LongBreak => (
+            "Long Break Over",
+            "Feeling refreshed? Let's get back to work.",
+        ),
     };
 
     let _ = app.notification().builder().title(title).body(body).show();
