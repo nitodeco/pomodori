@@ -4,6 +4,7 @@ import {
   createControlButtons,
   createKeyboardShortcuts,
   createSettingsPanel,
+  createSoundManager,
   createStatsDashboard,
   createTimeDisplay,
 } from "./components";
@@ -11,6 +12,7 @@ import { timerStore } from "./timer";
 import { sessionTracker, statsStore } from "./sessions";
 
 const appWindow = getCurrentWindow();
+const soundManager = createSoundManager();
 
 const setupTitlebarControls = () => {
   document.querySelectorAll(".titlebar-button").forEach((button) => {
@@ -82,7 +84,9 @@ const setupSettings = () => {
 
   const settingsPanel = createSettingsPanel({
     container: maybeApp as HTMLElement,
-    onSettingsChange: () => {},
+    onSettingsChange: () => {
+      soundManager.refreshSettings();
+    },
   });
 
   maybeSettingsButton.addEventListener("click", () => settingsPanel.open());
@@ -113,10 +117,15 @@ const setupSessionTracking = async () => {
   });
 };
 
+const setupSounds = async () => {
+  await soundManager.init();
+};
+
 window.addEventListener("DOMContentLoaded", () => {
   setupTitlebarControls();
   setupTimer();
   setupSettings();
   setupStatsDashboard();
   setupSessionTracking();
+  setupSounds();
 });

@@ -24,3 +24,5 @@ export {
   createStatsDashboard,
   type StatsDashboard,
 } from "./stats-dashboard";
+
+export { createSoundManager, type SoundManager } from "./sound-manager";
