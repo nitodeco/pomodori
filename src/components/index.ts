@@ -26,3 +26,5 @@ export {
 } from "./stats-dashboard";
 
 export { createSoundManager, type SoundManager } from "./sound-manager";
+
+export { createAutoAdvance } from "./auto-advance";

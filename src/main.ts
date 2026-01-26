@@ -1,5 +1,6 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
+  createAutoAdvance,
   createCircularProgress,
   createControlButtons,
   createKeyboardShortcuts,
@@ -13,6 +14,7 @@ import { sessionTracker, statsStore } from "./sessions";
 import { createTrayManager } from "./tray";
 
 const appWindow = getCurrentWindow();
+const autoAdvance = createAutoAdvance();
 const soundManager = createSoundManager();
 const trayManager = createTrayManager({
   onStart: () => timerStore.start(),
@@ -134,6 +136,10 @@ const setupTray = async () => {
   await trayManager.init();
 };
 
+const setupAutoAdvance = async () => {
+  await autoAdvance.init();
+};
+
 window.addEventListener("DOMContentLoaded", () => {
   setupTitlebarControls();
   setupTimer();
@@ -142,4 +148,5 @@ window.addEventListener("DOMContentLoaded", () => {
   setupSessionTracking();
   setupSounds();
   setupTray();
+  setupAutoAdvance();
 });
