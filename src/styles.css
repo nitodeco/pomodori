@@ -88,6 +88,14 @@ body {
   padding: 20px;
 }
 
+.circular-progress {
+  display: block;
+}
+
+.circular-progress__bar {
+  transition: stroke-dashoffset 0.3s ease-out;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color: #f0f0f0;
@@ -95,5 +103,9 @@ body {
 
   .app {
     background-color: rgba(30, 30, 30, 0.85);
+  }
+
+  .circular-progress circle:first-child {
+    stroke: rgba(255, 255, 255, 0.1);
   }
 }

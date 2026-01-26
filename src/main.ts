@@ -1,4 +1,6 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { createCircularProgress } from "./components";
+import { timerStore } from "./timer";
 
 const appWindow = getCurrentWindow();
 
@@ -17,6 +19,27 @@ const setupTitlebarControls = () => {
   });
 };
 
+const setupTimer = async () => {
+  const maybeContainer = document.getElementById("timer-container");
+
+  if (!maybeContainer) {
+    return;
+  }
+
+  const circularProgress = createCircularProgress({
+    container: maybeContainer,
+    sizeInPx: 200,
+    strokeWidthInPx: 8,
+  });
+
+  await timerStore.init();
+
+  timerStore.subscribe((status) => {
+    circularProgress.setProgress(status.progress);
+  });
+};
+
 window.addEventListener("DOMContentLoaded", () => {
   setupTitlebarControls();
+  setupTimer();
 });
