@@ -1,22 +1,22 @@
-import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
-let greetInputEl: HTMLInputElement | null;
-let greetMsgEl: HTMLElement | null;
+const appWindow = getCurrentWindow();
 
-async function greet() {
-  if (greetMsgEl && greetInputEl) {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsgEl.textContent = await invoke("greet", {
-      name: greetInputEl.value,
+const setupTitlebarControls = () => {
+  document.querySelectorAll(".titlebar-button").forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      const target = event.currentTarget as HTMLElement;
+      const action = target.dataset.action;
+
+      if (action === "close") {
+        await appWindow.close();
+      } else if (action === "minimize") {
+        await appWindow.minimize();
+      }
     });
-  }
-}
+  });
+};
 
 window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
+  setupTitlebarControls();
 });
