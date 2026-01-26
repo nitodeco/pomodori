@@ -1,5 +1,9 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { createCircularProgress, createTimeDisplay } from "./components";
+import {
+  createCircularProgress,
+  createControlButtons,
+  createTimeDisplay,
+} from "./components";
 import { timerStore } from "./timer";
 
 const appWindow = getCurrentWindow();
@@ -20,20 +24,29 @@ const setupTitlebarControls = () => {
 };
 
 const setupTimer = async () => {
-  const maybeContainer = document.getElementById("timer-container");
+  const maybeTimerContainer = document.getElementById("timer-container");
+  const maybeControlsContainer = document.getElementById("controls-container");
 
-  if (!maybeContainer) {
+  if (!maybeTimerContainer || !maybeControlsContainer) {
     return;
   }
 
   const circularProgress = createCircularProgress({
-    container: maybeContainer,
+    container: maybeTimerContainer,
     sizeInPx: 200,
     strokeWidthInPx: 8,
   });
 
   const timeDisplay = createTimeDisplay({
-    container: maybeContainer,
+    container: maybeTimerContainer,
+  });
+
+  const controlButtons = createControlButtons({
+    container: maybeControlsContainer,
+    onStart: () => timerStore.start(),
+    onPause: () => timerStore.pause(),
+    onResume: () => timerStore.resume(),
+    onStop: () => timerStore.stop(),
   });
 
   await timerStore.init();
@@ -42,6 +55,7 @@ const setupTimer = async () => {
     circularProgress.setProgress(status.progress);
     timeDisplay.setTime(status.remainingSecs);
     timeDisplay.setMode(status.sessionType);
+    controlButtons.setState(status.state);
   });
 };
 

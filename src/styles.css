@@ -129,6 +129,40 @@ body {
   letter-spacing: 0.05em;
 }
 
+.control-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.control-button {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.control-button:hover {
+  opacity: 0.9;
+}
+
+.control-button:active {
+  transform: scale(0.98);
+}
+
+.control-button--primary {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.control-button--secondary {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: inherit;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color: #f0f0f0;
@@ -140,5 +174,9 @@ body {
 
   .circular-progress circle:first-child {
     stroke: rgba(255, 255, 255, 0.1);
+  }
+
+  .control-button--secondary {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
