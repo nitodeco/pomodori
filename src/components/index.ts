@@ -9,3 +9,8 @@ export {
 } from "./control-buttons";
 
 export { createTimeDisplay, type TimeDisplay } from "./time-display";
+
+export {
+  createKeyboardShortcuts,
+  type KeyboardShortcuts,
+} from "./keyboard-shortcuts";

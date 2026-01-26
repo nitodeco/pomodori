@@ -2,6 +2,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   createCircularProgress,
   createControlButtons,
+  createKeyboardShortcuts,
   createTimeDisplay,
 } from "./components";
 import { timerStore } from "./timer";
@@ -47,6 +48,15 @@ const setupTimer = async () => {
     onPause: () => timerStore.pause(),
     onResume: () => timerStore.resume(),
     onStop: () => timerStore.stop(),
+  });
+
+  createKeyboardShortcuts({
+    onStart: () => timerStore.start(),
+    onPause: () => timerStore.pause(),
+    onResume: () => timerStore.resume(),
+    onStop: () => timerStore.stop(),
+    onReset: () => timerStore.reset(),
+    getCurrentState: () => timerStore.getStatus().state,
   });
 
   await timerStore.init();
