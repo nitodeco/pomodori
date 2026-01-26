@@ -3,6 +3,7 @@ import {
   createCircularProgress,
   createControlButtons,
   createKeyboardShortcuts,
+  createSettingsPanel,
   createTimeDisplay,
 } from "./components";
 import { timerStore } from "./timer";
@@ -69,7 +70,24 @@ const setupTimer = async () => {
   });
 };
 
+const setupSettings = () => {
+  const maybeApp = document.querySelector(".app");
+  const maybeSettingsButton = document.getElementById("settings-button");
+
+  if (!maybeApp || !maybeSettingsButton) {
+    return;
+  }
+
+  const settingsPanel = createSettingsPanel({
+    container: maybeApp as HTMLElement,
+    onSettingsChange: () => {},
+  });
+
+  maybeSettingsButton.addEventListener("click", () => settingsPanel.open());
+};
+
 window.addEventListener("DOMContentLoaded", () => {
   setupTitlebarControls();
   setupTimer();
+  setupSettings();
 });

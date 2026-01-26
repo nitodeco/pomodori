@@ -14,3 +14,8 @@ export {
   createKeyboardShortcuts,
   type KeyboardShortcuts,
 } from "./keyboard-shortcuts";
+
+export {
+  createSettingsPanel,
+  type SettingsPanel,
+} from "./settings-panel";
