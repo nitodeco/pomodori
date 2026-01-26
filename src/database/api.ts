@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { SessionType } from "../timer/types";
-import type { Session } from "./types";
+import type { Session, SessionStats } from "./types";
 
 export const createSession = (
   sessionType: SessionType,
@@ -21,3 +21,9 @@ export const getSessions = (
   toDate?: string
 ): Promise<Session[]> =>
   invoke<Session[]>("db_get_sessions", { fromDate, toDate });
+
+export const getStats = (
+  fromDate?: string,
+  toDate?: string
+): Promise<SessionStats> =>
+  invoke<SessionStats>("db_get_stats", { fromDate, toDate });

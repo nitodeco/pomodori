@@ -8,3 +8,10 @@ export type Session = {
   durationInSecs: number;
   completed: boolean;
 };
+
+export type SessionStats = {
+  totalSessions: number;
+  completedSessions: number;
+  totalWorkTimeInSecs: number;
+  totalBreakTimeInSecs: number;
+};

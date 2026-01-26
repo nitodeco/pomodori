@@ -69,10 +69,17 @@ pub fn timer_resume(app: AppHandle, timer_manager: State<TimerManager>) -> Timer
 }
 
 #[tauri::command]
-pub fn timer_stop(timer_manager: State<TimerManager>) -> TimerStatus {
+pub fn timer_stop(app: AppHandle, timer_manager: State<TimerManager>) -> TimerStatus {
     let mut timer = timer_manager.0.lock().unwrap();
+    let was_running = timer.state() == TimerState::Running || timer.state() == TimerState::Paused;
     timer.stop();
-    TimerStatus::from(&*timer)
+    let status = TimerStatus::from(&*timer);
+
+    if was_running {
+        let _ = app.emit("timer-stopped", &status);
+    }
+
+    status
 }
 
 #[tauri::command]

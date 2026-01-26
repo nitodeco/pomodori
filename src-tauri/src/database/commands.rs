@@ -1,7 +1,9 @@
 use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
 use tauri::{AppHandle, Manager};
 
-use super::schema::{Session, SessionRow, CREATE_SESSIONS_INDEX, CREATE_SESSIONS_TABLE};
+use super::schema::{
+    Session, SessionRow, SessionStats, StatsRow, CREATE_SESSIONS_INDEX, CREATE_SESSIONS_TABLE,
+};
 
 pub struct DbManager(pub SqlitePool);
 
@@ -115,4 +117,55 @@ pub async fn db_get_sessions(
     .map_err(|e| e.to_string())?;
 
     Ok(rows.into_iter().map(Session::from).collect())
+}
+
+#[tauri::command]
+pub async fn db_get_stats(
+    app: AppHandle,
+    from_date: Option<String>,
+    to_date: Option<String>,
+) -> Result<SessionStats, String> {
+    let state = app.state::<DbManager>();
+
+    let base_query = "
+        SELECT
+            COUNT(*) as total_sessions,
+            SUM(CASE WHEN completed = 1 THEN 1 ELSE 0 END) as completed_sessions,
+            COALESCE(SUM(CASE WHEN session_type = 'work' AND completed = 1 THEN duration_in_secs ELSE 0 END), 0) as total_work_time_in_secs,
+            COALESCE(SUM(CASE WHEN session_type != 'work' AND completed = 1 THEN duration_in_secs ELSE 0 END), 0) as total_break_time_in_secs
+        FROM sessions
+    ";
+
+    let row: StatsRow = match (&from_date, &to_date) {
+        (Some(from), Some(to)) => {
+            let query = format!("{} WHERE started_at >= ? AND started_at <= ?", base_query);
+            sqlx::query_as::<_, StatsRow>(&query)
+                .bind(from)
+                .bind(to)
+                .fetch_one(&state.0)
+                .await
+        }
+        (Some(from), None) => {
+            let query = format!("{} WHERE started_at >= ?", base_query);
+            sqlx::query_as::<_, StatsRow>(&query)
+                .bind(from)
+                .fetch_one(&state.0)
+                .await
+        }
+        (None, Some(to)) => {
+            let query = format!("{} WHERE started_at <= ?", base_query);
+            sqlx::query_as::<_, StatsRow>(&query)
+                .bind(to)
+                .fetch_one(&state.0)
+                .await
+        }
+        (None, None) => {
+            sqlx::query_as::<_, StatsRow>(base_query)
+                .fetch_one(&state.0)
+                .await
+        }
+    }
+    .map_err(|e| e.to_string())?;
+
+    Ok(SessionStats::from(row))
 }

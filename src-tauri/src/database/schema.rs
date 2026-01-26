@@ -35,6 +35,34 @@ impl From<SessionRow> for Session {
     }
 }
 
+#[derive(Debug, Clone, FromRow)]
+pub struct StatsRow {
+    pub total_sessions: i64,
+    pub completed_sessions: i64,
+    pub total_work_time_in_secs: i64,
+    pub total_break_time_in_secs: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SessionStats {
+    pub total_sessions: i64,
+    pub completed_sessions: i64,
+    pub total_work_time_in_secs: i64,
+    pub total_break_time_in_secs: i64,
+}
+
+impl From<StatsRow> for SessionStats {
+    fn from(row: StatsRow) -> Self {
+        Self {
+            total_sessions: row.total_sessions,
+            completed_sessions: row.completed_sessions,
+            total_work_time_in_secs: row.total_work_time_in_secs,
+            total_break_time_in_secs: row.total_break_time_in_secs,
+        }
+    }
+}
+
 pub const CREATE_SESSIONS_TABLE: &str = "
 CREATE TABLE IF NOT EXISTS sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

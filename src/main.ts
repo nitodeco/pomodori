@@ -7,6 +7,7 @@ import {
   createTimeDisplay,
 } from "./components";
 import { timerStore } from "./timer";
+import { sessionTracker, statsStore } from "./sessions";
 
 const appWindow = getCurrentWindow();
 
@@ -86,8 +87,19 @@ const setupSettings = () => {
   maybeSettingsButton.addEventListener("click", () => settingsPanel.open());
 };
 
+const setupSessionTracking = async () => {
+  await sessionTracker.init();
+  await statsStore.refresh();
+
+  sessionTracker.onSessionCompleted(() => {
+    statsStore.refreshTodayStats();
+    statsStore.refreshAllTimeStats();
+  });
+};
+
 window.addEventListener("DOMContentLoaded", () => {
   setupTitlebarControls();
   setupTimer();
   setupSettings();
+  setupSessionTracking();
 });

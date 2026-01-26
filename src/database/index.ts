@@ -1,2 +1,2 @@
-export { createSession, completeSession, getSessions } from "./api";
-export type { Session } from "./types";
+export { createSession, completeSession, getSessions, getStats } from "./api";
+export type { Session, SessionStats } from "./types";

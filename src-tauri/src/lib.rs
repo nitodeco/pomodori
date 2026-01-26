@@ -9,7 +9,9 @@ use commands::{
     timer_get_status, timer_pause, timer_reset, timer_resume, timer_set_duration,
     timer_set_session_type, timer_start, timer_stop, TimerManager,
 };
-use database::{db_complete_session, db_create_session, db_get_sessions, init_database};
+use database::{
+    db_complete_session, db_create_session, db_get_sessions, db_get_stats, init_database,
+};
 use settings::{settings_get, settings_update};
 use timer::Timer;
 
@@ -42,6 +44,7 @@ pub fn run() {
             db_create_session,
             db_complete_session,
             db_get_sessions,
+            db_get_stats,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
