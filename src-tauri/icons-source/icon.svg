@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="tomatoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#E74C3C"/>
+    </linearGradient>
+    <linearGradient id="highlightGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF8A8A"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <linearGradient id="stemGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#27AE60"/>
+      <stop offset="100%" stop-color="#1E8449"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Main tomato body -->
+  <ellipse cx="256" cy="290" rx="190" ry="175" fill="url(#tomatoGradient)"/>
+
+  <!-- Highlight -->
+  <ellipse cx="200" cy="230" rx="60" ry="50" fill="url(#highlightGradient)" opacity="0.4"/>
+
+  <!-- Stem -->
+  <path d="M256 115 Q256 85 256 70 Q256 55 250 50 Q244 45 256 45 Q268 45 262 50 Q256 55 256 70 Q256 85 256 115" fill="url(#stemGradient)" stroke="#1E8449" stroke-width="3"/>
+
+  <!-- Leaves -->
+  <path d="M256 120 Q200 90 170 100 Q190 110 200 130 Q220 115 256 120" fill="#27AE60"/>
+  <path d="M256 120 Q312 90 342 100 Q322 110 312 130 Q292 115 256 120" fill="#2ECC71"/>
+  <path d="M256 115 Q230 70 210 65 Q225 85 235 110 Q245 100 256 115" fill="#27AE60"/>
+  <path d="M256 115 Q282 70 302 65 Q287 85 277 110 Q267 100 256 115" fill="#2ECC71"/>
+</svg>
