@@ -1,5 +1,7 @@
 mod commands;
 pub mod database;
+#[cfg(test)]
+mod integration_tests;
 pub mod settings;
 pub mod timer;
 pub mod tray;
