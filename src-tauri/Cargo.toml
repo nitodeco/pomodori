@@ -21,3 +21,10 @@ tauri-plugin-store = "2"
 tauri-plugin-notification = "2.3.3"
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "sqlite"] }
 
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
+
