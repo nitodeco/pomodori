@@ -4,6 +4,7 @@ import {
   createControlButtons,
   createKeyboardShortcuts,
   createSettingsPanel,
+  createStatsDashboard,
   createTimeDisplay,
 } from "./components";
 import { timerStore } from "./timer";
@@ -87,6 +88,21 @@ const setupSettings = () => {
   maybeSettingsButton.addEventListener("click", () => settingsPanel.open());
 };
 
+const setupStatsDashboard = () => {
+  const maybeApp = document.querySelector(".app");
+  const maybeStatsButton = document.getElementById("stats-button");
+
+  if (!maybeApp || !maybeStatsButton) {
+    return;
+  }
+
+  const statsDashboard = createStatsDashboard({
+    container: maybeApp as HTMLElement,
+  });
+
+  maybeStatsButton.addEventListener("click", () => statsDashboard.open());
+};
+
 const setupSessionTracking = async () => {
   await sessionTracker.init();
   await statsStore.refresh();
@@ -101,5 +117,6 @@ window.addEventListener("DOMContentLoaded", () => {
   setupTitlebarControls();
   setupTimer();
   setupSettings();
+  setupStatsDashboard();
   setupSessionTracking();
 });

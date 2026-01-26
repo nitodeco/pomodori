@@ -19,3 +19,8 @@ export {
   createSettingsPanel,
   type SettingsPanel,
 } from "./settings-panel";
+
+export {
+  createStatsDashboard,
+  type StatsDashboard,
+} from "./stats-dashboard";
