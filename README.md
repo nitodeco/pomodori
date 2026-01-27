@@ -8,7 +8,7 @@ Pomodori is a lightweight **Pomodoro timer** desktop app built with **Tauri + Vi
 - **Automation**: Auto-start breaks and/or auto-start work sessions
 - **Tray menu**: Start, pause, stop, show/hide window, quit
 - **Desktop notifications**: Optional notifications on session completion
-- **Sound effects**: Optional sound on ticks/completion (configurable)
+- **Sound effects**: Optional sound on completion (configurable)
 - **Stats window**: Today + all-time session count and focus time
 - **Local persistence**: Stores settings + session history on your machine
 
@@ -27,7 +27,7 @@ Pomodori is a lightweight **Pomodoro timer** desktop app built with **Tauri + Vi
   - Settings: `tauri-plugin-store`
   - Sessions/Stats: SQLite (via `sqlx`) in the Tauri app data directory
 
-## Setup
+## Development
 
 ### Prerequisites
 
@@ -42,8 +42,6 @@ Tauri prerequisites are documented here: `https://tauri.app/start/prerequisites/
 ```bash
 bun install
 ```
-
-## Development
 
 ### Run the desktop app (recommended)
 

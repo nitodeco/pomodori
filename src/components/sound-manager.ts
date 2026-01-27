@@ -1,7 +1,7 @@
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { createTickSound, type TickSound } from "../audio";
 import { getSettings } from "../settings";
-import type { TimerStatus, TimerState, SessionType } from "../timer/types";
+import type { SessionType, TimerState, TimerStatus } from "../timer/types";
 
 type SoundManagerConfig = {
   onlyDuringWork?: boolean;
@@ -11,12 +11,11 @@ const getNextSessionType = (currentSessionType: SessionType): SessionType => {
   if (currentSessionType === "work") {
     return "shortBreak";
   }
+
   return "work";
 };
 
-const isAutoStartEnabled = async (
-  nextSessionType: SessionType
-): Promise<boolean> => {
+const isAutoStartEnabled = async (nextSessionType: SessionType): Promise<boolean> => {
   const settings = await getSettings();
 
   if (nextSessionType === "work") {
@@ -57,6 +56,7 @@ export const createSoundManager = (config: SoundManagerConfig = {}) => {
 
     if (previousState === null) {
       previousState = currentState;
+
       return;
     }
 

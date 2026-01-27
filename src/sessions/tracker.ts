@@ -1,6 +1,6 @@
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import type { TimerStatus, SessionType } from "../timer/types";
-import { createSession, completeSession } from "../database";
+import { completeSession, createSession } from "../database";
+import type { SessionType, TimerStatus } from "../timer/types";
 
 type ActiveSession = {
   id: number;
@@ -19,10 +19,7 @@ const createSessionTracker = () => {
   let isInitialized = false;
   const completedCallbacks = new Set<SessionCompletedCallback>();
 
-  const startSession = async (
-    sessionType: SessionType,
-    durationInSecs: number
-  ): Promise<void> => {
+  const startSession = async (sessionType: SessionType, durationInSecs: number): Promise<void> => {
     if (maybeActiveSession) {
       return;
     }
@@ -90,9 +87,7 @@ const createSessionTracker = () => {
     isInitialized = true;
   };
 
-  const onSessionCompleted = (
-    callback: SessionCompletedCallback
-  ): (() => void) => {
+  const onSessionCompleted = (callback: SessionCompletedCallback): (() => void) => {
     completedCallbacks.add(callback);
 
     return () => {
@@ -111,14 +106,17 @@ const createSessionTracker = () => {
       unlistenTick();
       unlistenTick = null;
     }
+
     if (unlistenFinished) {
       unlistenFinished();
       unlistenFinished = null;
     }
+
     if (unlistenStopped) {
       unlistenStopped();
       unlistenStopped = null;
     }
+
     completedCallbacks.clear();
     maybeActiveSession = null;
     isInitialized = false;

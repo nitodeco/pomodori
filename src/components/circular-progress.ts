@@ -13,13 +13,10 @@ const DEFAULT_PROGRESS_COLOR = "#e74c3c";
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
 const createSvgElement = <K extends keyof SVGElementTagNameMap>(
-  tagName: K
+  tagName: K,
 ): SVGElementTagNameMap[K] => document.createElementNS(SVG_NAMESPACE, tagName);
 
-const setAttributes = (
-  element: SVGElement,
-  attributes: Record<string, string | number>
-) => {
+const setAttributes = (element: SVGElement, attributes: Record<string, string | number>) => {
   for (const [key, value] of Object.entries(attributes)) {
     element.setAttribute(key, String(value));
   }

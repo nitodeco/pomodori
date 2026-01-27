@@ -1,5 +1,5 @@
-import { emit, listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
+import { emit, listen } from "@tauri-apps/api/event";
 import {
   createAutoAdvance,
   createCircularProgress,
@@ -8,8 +8,8 @@ import {
   createSoundManager,
   createTimeDisplay,
 } from "./components";
-import { timerStore } from "./timer";
 import { sessionTracker, statsStore } from "./sessions";
+import { timerStore } from "./timer";
 import { createTrayManager } from "./tray";
 
 const autoAdvance = createAutoAdvance();

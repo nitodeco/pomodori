@@ -8,11 +8,7 @@ type ControlButtonsConfig = {
   onStop: () => void;
 };
 
-const createButton = (
-  className: string,
-  label: string,
-  onClick: () => void
-): HTMLButtonElement => {
+const createButton = (className: string, label: string, onClick: () => void): HTMLButtonElement => {
   const button = document.createElement("button");
   button.className = `control-button ${className}`;
   button.textContent = label;
@@ -29,11 +25,7 @@ export const createControlButtons = (config: ControlButtonsConfig) => {
 
   const startButton = createButton("control-button--primary", "Start", onStart);
   const pauseButton = createButton("control-button--primary", "Pause", onPause);
-  const resumeButton = createButton(
-    "control-button--primary",
-    "Resume",
-    onResume
-  );
+  const resumeButton = createButton("control-button--primary", "Resume", onResume);
   const stopButton = createButton("control-button--secondary", "Stop", onStop);
 
   wrapper.appendChild(startButton);

@@ -1,7 +1,7 @@
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import type { TimerStatus, SessionType } from "../timer/types";
-import { timerStore } from "../timer";
 import { getSettings } from "../settings";
+import { timerStore } from "../timer";
+import type { SessionType, TimerStatus } from "../timer/types";
 
 type AutoAdvanceConfig = {
   onAdvance?: (nextSessionType: SessionType, isAutoStarted: boolean) => void;
@@ -10,7 +10,7 @@ type AutoAdvanceConfig = {
 const getNextSessionType = (
   currentSessionType: SessionType,
   completedWorkSessions: number,
-  sessionsUntilLongBreak: number
+  sessionsUntilLongBreak: number,
 ): SessionType => {
   if (currentSessionType === "work") {
     const isLongBreakDue = completedWorkSessions >= sessionsUntilLongBreak;
@@ -27,7 +27,7 @@ const getDurationForSessionType = (
     workDurationInSecs: number;
     shortBreakDurationInSecs: number;
     longBreakDurationInSecs: number;
-  }
+  },
 ): number => {
   const DURATION_IN_SECS_BY_SESSION_TYPE: Record<SessionType, number> = {
     work: settings.workDurationInSecs,
@@ -63,7 +63,7 @@ export const createAutoAdvance = (config: AutoAdvanceConfig = {}) => {
     const nextSessionType = getNextSessionType(
       status.sessionType,
       completedWorkSessions,
-      settings.sessionsUntilLongBreak
+      settings.sessionsUntilLongBreak,
     );
 
     const nextDuration = getDurationForSessionType(nextSessionType, settings);
@@ -105,6 +105,7 @@ export const createAutoAdvance = (config: AutoAdvanceConfig = {}) => {
       unlistenFinished();
       unlistenFinished = null;
     }
+
     completedWorkSessions = 0;
     isInitialized = false;
   };

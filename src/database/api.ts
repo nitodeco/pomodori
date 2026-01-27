@@ -5,7 +5,7 @@ import type { Session, SessionStats } from "./types";
 export const createSession = (
   sessionType: SessionType,
   startedAt: string,
-  durationInSecs: number
+  durationInSecs: number,
 ): Promise<number> =>
   invoke<number>("db_create_session", {
     sessionType,
@@ -16,14 +16,8 @@ export const createSession = (
 export const completeSession = (id: number, endedAt: string): Promise<void> =>
   invoke<void>("db_complete_session", { id, endedAt });
 
-export const getSessions = (
-  fromDate?: string,
-  toDate?: string
-): Promise<Session[]> =>
-  invoke<Session[]>("db_get_sessions", { fromDate, toDate });
+export const getSessions = (fromDate?: string, toDate?: string): Promise<Array<Session>> =>
+  invoke<Array<Session>>("db_get_sessions", { fromDate, toDate });
 
-export const getStats = (
-  fromDate?: string,
-  toDate?: string
-): Promise<SessionStats> =>
+export const getStats = (fromDate?: string, toDate?: string): Promise<SessionStats> =>
   invoke<SessionStats>("db_get_stats", { fromDate, toDate });

@@ -83,17 +83,21 @@ export const createStatsDashboard = (config: StatsDashboardConfig) => {
 
   const todayGroup = createStatsGroup("Today");
   const todayItems = todayGroup.querySelector(".stats-group__items");
+
   if (!todayItems) {
     throw new Error("Stats dashboard items container missing.");
   }
+
   todayItems.appendChild(createStatItem("Sessions", "stats-today-sessions"));
   todayItems.appendChild(createStatItem("Focus Time", "stats-today-time"));
 
   const allTimeGroup = createStatsGroup("All Time");
   const allTimeItems = allTimeGroup.querySelector(".stats-group__items");
+
   if (!allTimeItems) {
     throw new Error("Stats dashboard items container missing.");
   }
+
   allTimeItems.appendChild(createStatItem("Sessions", "stats-alltime-sessions"));
   allTimeItems.appendChild(createStatItem("Focus Time", "stats-alltime-time"));
 

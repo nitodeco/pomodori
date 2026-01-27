@@ -11,14 +11,10 @@ type KeyboardShortcutsConfig = {
 };
 
 export const createKeyboardShortcuts = (config: KeyboardShortcutsConfig) => {
-  const { onStart, onPause, onResume, onStop, onReset, getCurrentState, onOpenSettings } =
-    config;
+  const { onStart, onPause, onResume, onStop, onReset, getCurrentState, onOpenSettings } = config;
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (
-      event.target instanceof HTMLInputElement ||
-      event.target instanceof HTMLTextAreaElement
-    ) {
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
       return;
     }
 

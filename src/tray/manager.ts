@@ -34,7 +34,7 @@ const buildTooltip = (status: TimerStatus): string => {
 };
 
 export const createTrayManager = (options: TrayManagerOptions) => {
-  const unlisteners: UnlistenFn[] = [];
+  const unlisteners: Array<UnlistenFn> = [];
 
   const setupEventListeners = async () => {
     const unlistenStart = await listen("tray-start", () => {

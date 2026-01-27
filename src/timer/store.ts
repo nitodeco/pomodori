@@ -1,6 +1,6 @@
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import type { TimerStatus } from "./types";
 import * as api from "./api";
+import type { TimerStatus } from "./types";
 
 type Subscriber = (status: TimerStatus) => void;
 
@@ -103,9 +103,7 @@ const createTimerStore = () => {
     return status;
   };
 
-  const setSessionType = async (
-    sessionType: TimerStatus["sessionType"]
-  ): Promise<TimerStatus> => {
+  const setSessionType = async (sessionType: TimerStatus["sessionType"]): Promise<TimerStatus> => {
     const status = await api.setSessionType(sessionType);
     updateStatus(status);
 
@@ -124,10 +122,12 @@ const createTimerStore = () => {
       unlistenTick();
       unlistenTick = null;
     }
+
     if (unlistenFinished) {
       unlistenFinished();
       unlistenFinished = null;
     }
+
     subscribers.clear();
     isInitialized = false;
   };

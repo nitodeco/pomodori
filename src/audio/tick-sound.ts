@@ -42,10 +42,7 @@ export const createTickSound = (config: TickSoundConfig = {}) => {
     const durationInSecs = durationInMs / 1_000;
 
     gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.001,
-      audioContext.currentTime + durationInSecs
-    );
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + durationInSecs);
 
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);

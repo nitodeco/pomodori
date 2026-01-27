@@ -1,2 +1,2 @@
-export { sessionTracker } from "./tracker";
 export { statsStore } from "./stats";
+export { sessionTracker } from "./tracker";

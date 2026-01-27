@@ -17,7 +17,7 @@ const createNumberInput = (
   label: string,
   value: number,
   min: number,
-  max: number
+  max: number,
 ): HTMLDivElement => {
   const wrapper = document.createElement("div");
   wrapper.className = "settings-field";
@@ -40,11 +40,7 @@ const createNumberInput = (
   return wrapper;
 };
 
-const createToggle = (
-  id: string,
-  label: string,
-  isChecked: boolean
-): HTMLDivElement => {
+const createToggle = (id: string, label: string, isChecked: boolean): HTMLDivElement => {
   const wrapper = document.createElement("div");
   wrapper.className = "settings-field settings-field--toggle";
 
@@ -100,33 +96,15 @@ export const createSettingsPanel = (config: SettingsPanelConfig) => {
   content.className = "settings-content";
 
   const durationsSection = createSection("Durations");
-  const workDuration = createNumberInput(
-    "workDuration",
-    "Work (minutes)",
-    25,
-    1,
-    120
-  );
-  const shortBreak = createNumberInput(
-    "shortBreak",
-    "Short Break (minutes)",
-    5,
-    1,
-    60
-  );
-  const longBreak = createNumberInput(
-    "longBreak",
-    "Long Break (minutes)",
-    15,
-    1,
-    60
-  );
+  const workDuration = createNumberInput("workDuration", "Work (minutes)", 25, 1, 120);
+  const shortBreak = createNumberInput("shortBreak", "Short Break (minutes)", 5, 1, 60);
+  const longBreak = createNumberInput("longBreak", "Long Break (minutes)", 15, 1, 60);
   const sessionsUntilLong = createNumberInput(
     "sessionsUntilLong",
     "Sessions until Long Break",
     4,
     1,
-    10
+    10,
   );
 
   durationsSection.appendChild(workDuration);
@@ -135,27 +113,15 @@ export const createSettingsPanel = (config: SettingsPanelConfig) => {
   durationsSection.appendChild(sessionsUntilLong);
 
   const automationSection = createSection("Automation");
-  const autoStartBreaks = createToggle(
-    "autoStartBreaks",
-    "Auto-start Breaks",
-    false
-  );
-  const autoStartWork = createToggle(
-    "autoStartWork",
-    "Auto-start Work",
-    false
-  );
+  const autoStartBreaks = createToggle("autoStartBreaks", "Auto-start Breaks", false);
+  const autoStartWork = createToggle("autoStartWork", "Auto-start Work", false);
 
   automationSection.appendChild(autoStartBreaks);
   automationSection.appendChild(autoStartWork);
 
   const notificationsSection = createSection("Notifications");
   const soundEnabled = createToggle("soundEnabled", "Sound Effects", true);
-  const notificationsEnabled = createToggle(
-    "notificationsEnabled",
-    "Desktop Notifications",
-    true
-  );
+  const notificationsEnabled = createToggle("notificationsEnabled", "Desktop Notifications", true);
 
   notificationsSection.appendChild(soundEnabled);
   notificationsSection.appendChild(notificationsEnabled);
@@ -178,30 +144,14 @@ export const createSettingsPanel = (config: SettingsPanelConfig) => {
   container.appendChild(footer);
 
   const getFormValues = (): Settings => {
-    const workDurationInput = document.getElementById(
-      "workDuration"
-    ) as HTMLInputElement;
-    const shortBreakInput = document.getElementById(
-      "shortBreak"
-    ) as HTMLInputElement;
-    const longBreakInput = document.getElementById(
-      "longBreak"
-    ) as HTMLInputElement;
-    const sessionsInput = document.getElementById(
-      "sessionsUntilLong"
-    ) as HTMLInputElement;
-    const autoBreaksInput = document.getElementById(
-      "autoStartBreaks"
-    ) as HTMLInputElement;
-    const autoWorkInput = document.getElementById(
-      "autoStartWork"
-    ) as HTMLInputElement;
-    const soundInput = document.getElementById(
-      "soundEnabled"
-    ) as HTMLInputElement;
-    const notifInput = document.getElementById(
-      "notificationsEnabled"
-    ) as HTMLInputElement;
+    const workDurationInput = document.getElementById("workDuration") as HTMLInputElement;
+    const shortBreakInput = document.getElementById("shortBreak") as HTMLInputElement;
+    const longBreakInput = document.getElementById("longBreak") as HTMLInputElement;
+    const sessionsInput = document.getElementById("sessionsUntilLong") as HTMLInputElement;
+    const autoBreaksInput = document.getElementById("autoStartBreaks") as HTMLInputElement;
+    const autoWorkInput = document.getElementById("autoStartWork") as HTMLInputElement;
+    const soundInput = document.getElementById("soundEnabled") as HTMLInputElement;
+    const notifInput = document.getElementById("notificationsEnabled") as HTMLInputElement;
 
     return {
       workDurationInSecs: minsToSecs(Number(workDurationInput.value)),
@@ -216,35 +166,17 @@ export const createSettingsPanel = (config: SettingsPanelConfig) => {
   };
 
   const setFormValues = (settings: Settings) => {
-    const workDurationInput = document.getElementById(
-      "workDuration"
-    ) as HTMLInputElement;
-    const shortBreakInput = document.getElementById(
-      "shortBreak"
-    ) as HTMLInputElement;
-    const longBreakInput = document.getElementById(
-      "longBreak"
-    ) as HTMLInputElement;
-    const sessionsInput = document.getElementById(
-      "sessionsUntilLong"
-    ) as HTMLInputElement;
-    const autoBreaksInput = document.getElementById(
-      "autoStartBreaks"
-    ) as HTMLInputElement;
-    const autoWorkInput = document.getElementById(
-      "autoStartWork"
-    ) as HTMLInputElement;
-    const soundInput = document.getElementById(
-      "soundEnabled"
-    ) as HTMLInputElement;
-    const notifInput = document.getElementById(
-      "notificationsEnabled"
-    ) as HTMLInputElement;
+    const workDurationInput = document.getElementById("workDuration") as HTMLInputElement;
+    const shortBreakInput = document.getElementById("shortBreak") as HTMLInputElement;
+    const longBreakInput = document.getElementById("longBreak") as HTMLInputElement;
+    const sessionsInput = document.getElementById("sessionsUntilLong") as HTMLInputElement;
+    const autoBreaksInput = document.getElementById("autoStartBreaks") as HTMLInputElement;
+    const autoWorkInput = document.getElementById("autoStartWork") as HTMLInputElement;
+    const soundInput = document.getElementById("soundEnabled") as HTMLInputElement;
+    const notifInput = document.getElementById("notificationsEnabled") as HTMLInputElement;
 
     workDurationInput.value = String(secsToMins(settings.workDurationInSecs));
-    shortBreakInput.value = String(
-      secsToMins(settings.shortBreakDurationInSecs)
-    );
+    shortBreakInput.value = String(secsToMins(settings.shortBreakDurationInSecs));
     longBreakInput.value = String(secsToMins(settings.longBreakDurationInSecs));
     sessionsInput.value = String(settings.sessionsUntilLongBreak);
     autoBreaksInput.checked = settings.autoStartBreaks;
@@ -263,8 +195,6 @@ export const createSettingsPanel = (config: SettingsPanelConfig) => {
       const newSettings = getFormValues();
       const savedSettings = await updateSettings(newSettings);
       await onSettingsChange(savedSettings);
-    } catch (error) {
-      console.error("Failed to save settings:", error);
     } finally {
       await appWindow.close();
     }

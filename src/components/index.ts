@@ -1,14 +1,12 @@
+export { createAutoAdvance } from "./auto-advance";
 export {
-  createCircularProgress,
   type CircularProgress,
+  createCircularProgress,
 } from "./circular-progress";
-
 export {
-  createControlButtons,
   type ControlButtons,
+  createControlButtons,
 } from "./control-buttons";
-
-export { createTimeDisplay, type TimeDisplay } from "./time-display";
 
 export {
   createKeyboardShortcuts,
@@ -19,12 +17,9 @@ export {
   createSettingsPanel,
   type SettingsPanel,
 } from "./settings-panel";
-
+export { createSoundManager, type SoundManager } from "./sound-manager";
 export {
   createStatsDashboard,
   type StatsDashboard,
 } from "./stats-dashboard";
-
-export { createSoundManager, type SoundManager } from "./sound-manager";
-
-export { createAutoAdvance } from "./auto-advance";
+export { createTimeDisplay, type TimeDisplay } from "./time-display";
