@@ -1,6 +1,6 @@
 [package]
 name = "pomodori"
-version = "0.1.0"
+version = "0.2.0"
 description = "A minimalist Pomodoro timer app"
 authors = ["nitodeco"]
 edition = "2021"
