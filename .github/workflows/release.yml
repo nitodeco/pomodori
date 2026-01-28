@@ -62,7 +62,7 @@ jobs:
         with:
           tauriScript: bun run tauri
           tagName: ${{ github.ref_name }}
-          releaseName: "Pomodori ${{ github.ref_name }}"
+          releaseName: ${{ github.ref_name }}
           releaseBody: |
             See the assets below to download and install Pomodori.
 
