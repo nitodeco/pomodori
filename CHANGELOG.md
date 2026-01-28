@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/nitodeco/pomodori/compare/v0.2.0...v0.2.1) (2026-01-28)
+
+
+### Bug Fixes
+
+* **ci:** use version only for release name ([5b21e49](https://github.com/nitodeco/pomodori/commit/5b21e4922035b71c4468f017099e2e4d1a810592))
+
 ## [0.2.0](https://github.com/nitodeco/pomodori/compare/pomodori-v0.1.0...pomodori-v0.2.0) (2026-01-28)
 
 
