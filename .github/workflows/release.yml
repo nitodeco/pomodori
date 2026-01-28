@@ -60,7 +60,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          packageManager: bun
+          tauriScript: bun run tauri
           tagName: ${{ github.ref_name }}
           releaseName: "Pomodori ${{ github.ref_name }}"
           releaseBody: |
